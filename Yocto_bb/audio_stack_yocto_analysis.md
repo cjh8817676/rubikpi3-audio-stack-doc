@@ -9,7 +9,8 @@
 ---
 
 ## 一、架構圖總覽
-![alt text](<../Qualcomm_Linux_Audio/High-level audio software architecture.png>)
+![High-level audio software architecture.png](<../Qualcomm_Linux_Audio/High-level audio software architecture.png>)
+
 圖源：https://docs.qualcomm.com/doc/80-70015-16/topic/features.html?product=895724676033554725&facet=Audio&version=1.2
 
 架構圖由上至下分為五個層次：
@@ -69,7 +70,7 @@
 | 接口 | 上層：PulseAudio Client API；下層：PAL / ALSA plugin |
 | Yocto Recipe | `pulseaudio_17.0.bbappend`（meta-rubikpi-bsp/recipes-multimedia） |
 | Yocto Recipe | `pa-pal-plugins_1.0.bb`（meta-rubikpi-bsp/recipes-multimedia） |
-| 特殊配置 | 在 RubikPi3 中被設定為 **不自動啟動**（`Avoid PulseAudio service to start`），改以 PipeWire 取代 |
+| 特殊配置 | Yocto recipe（`qcom-custom-bsp`）設定標準 user session service 不自動啟動（`Avoid PulseAudio service to start`）；RubikPi3 實際以 **PulseAudio system mode**（`--system`）搭配 `module-pal-card` 執行 |
 
 **Package Group 成員（`packagegroup-qcom-audio.bb` → `PULSEAUDIO_PKGS`）：**
 ```
@@ -89,11 +90,12 @@ pulseaudio-module-bluez5-device
 **`pulseaudio_17.0.bbappend` 補充說明：**
 - 額外 patch：`0003-libpulse-Initialize-channel-map-for-7-8-channel-audio.patch`（7/8 聲道支援）、`0004-pulsecore-Update-desired-sample-spec-for-requested-c.patch`
 - 安裝自訂 `system.pa` / `system_custom.pa`（包含 Bluetooth module 載入）
-- `qcom-custom-bsp` 使用 `pulseaudio_custom.service`（服務不自動啟動，由 PipeWire 取代）
+- `qcom-custom-bsp` 使用 `pulseaudio_custom.service`（標準 user session service 不自動啟動；RubikPi3 改用 system mode `pulseaudio.service`，以 `--system` 啟動）
 - `qcom-base-bsp` 使用標準 `pulseaudio.service`（一般 Qualcomm 平台仍啟動 PulseAudio）
 
-> **RubikPi3 實際情況**：PulseAudio 已被 **PipeWire** 取代作為預設音頻伺服器。  
-> 相關 Recipe：`qcom-pw-pal-plugin_git.bb`、`wireplumber_%.bbappend`
+> **RubikPi3 實際情況（實測修正）**：RubikPi3 使用 **PulseAudio 17.0（system mode）** 作為音頻伺服器，**PipeWire 並未安裝**。  
+> `pw-play`、`pw-record`、`pw-cli` 等 PipeWire 工具不存在於此映像中。  
+> PulseAudio 以 `--system` 模式由 systemd 啟動（PID 1628，`pulse` 用戶）；後端透過 `module-pal-card`（`pa-pal-plugins_1.0.bb`）連接 PAL → AGM → LPAIF。
 
 **`qcom-pw-pal-plugin_git.bb` 詳細說明：**
 
@@ -453,13 +455,13 @@ PC (QACT 工具)
 | 設計點 | 說明 |
 |--------|------|
 | MCLK 永久開啟 | ES8316 需持續 24.576 MHz MCLK（qcm6490.c：`pri_mi2s_mclk_count` 只增不減）|
-| PipeWire 取代 PulseAudio | PulseAudio 僅保留 module 套件，服務由 WirePlumber + PipeWire 取代 |
+| PulseAudio system mode | PulseAudio 17.0 以 `--system` 模式執行，後端為 `module-pal-card`（`pa-pal-plugins`）→ PAL；**PipeWire 未安裝** |
 | ES8316 init-regs | DT 中 40+ 寄存器初始化序列，確保啟動時正確配置 Codec |
 | AGM 2ch Capture | Patch `0003_Change_the_capture_format_of_ES8316_from_1ch_to_2ch.patch` 修正錄音聲道 |
 | HDMI 音頻 | QUATERNARY_MI2S_RX → LT9611 HDMI bridge，格式改為 32bit（AGM patch）|
 | GPIO117 電源控制 | `regulator-fixed` + `regulator-always-on`，ES8316 永久供電 |
 | Jack 偵測反轉 | `everest,jack-detect-inverted = <1>`（RubikPi3 硬體設計差異）|
-| PipeWire 停用 ALSA backend | `60-disable-alsa.conf`（wireplumber）確保 PipeWire 不直接操作 ALSA，全走 PAL |
+| PulseAudio 不直接操作 ALSA | PulseAudio 透過 `module-pal-card` 連接 PAL，不直接開啟 ALSA PCM 節點；LPAIF 後端節點由 PAL/AGM 統一管理 |
 | packagegroup 雙路分支 | `qcom-base-bsp` 僅含基本套件；`qcom-custom-bsp` 含完整 HAL + Voice/DAC/Mercury |
 
 ---

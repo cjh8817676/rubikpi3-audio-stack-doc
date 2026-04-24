@@ -2,6 +2,7 @@
     "chat.tools.terminal.autoApprove": {
         "&": true,
         "pidof": true,
-        "pactl": true
+        "pactl": true,
+        "Set-Content": true
     }
 }
