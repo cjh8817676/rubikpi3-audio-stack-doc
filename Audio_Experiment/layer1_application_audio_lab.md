@@ -6,8 +6,57 @@
 > 分析日期：2026-04-24（實測修正：2026-04-24）
 
 ---
+## PCM 裝置科普
+
+在 Linux 的音訊架構（ALSA）中，**PCM (Pulse Code Modulation，脈衝編碼調變)** 裝置是處理數位音訊資料流的核心介面。
+
+簡單來說，它是電腦與硬體之間傳輸「數位聲音樣本」的隧道。
+
+**PCM** 是一種將類比訊號轉換為數位資料的標準格式。在 Linux 中，PCM 裝置代表一個可以接收數位音訊（播放）或產生數位音訊（錄音）的邏輯端點。
+
+* **播放 (Playback)**：將應用程式的數位音訊資料（如 MP3 解碼後的 PCM 資料）傳送到數位類比轉換器 (DAC) 變成聲音。
+* **錄音 (Capture)**：將麥克風捕捉到的類比訊號透過類比數位轉換器 (ADC) 轉為數位 PCM 資料。
+
+### 命名規則與物理意義
+你在 `/dev/snd` 看到的 `pcmC0D0p` 具有特定含義：
+
+| 縮寫 | 全稱 | 說明 |
+| :--- | :--- | :--- |
+| **pcm** | PCM | 指這是一個處理數位音訊的裝置。 |
+| **C0** | Card 0 | 第 0 張音效卡（系統通常從 0 開始編號）。 |
+| **D0** | Device 0 | 該音效卡上的第 0 個裝置（例如主喇叭、HDMI 或 S/PDIF）。 |
+| **p/c** | Playback / Capture | **p** 代表播放（輸出）；**c** 代表擷取（錄音）。 |
+
+---
+
+### 運作層級
+Linux 音訊架構通常分為三層，PCM 裝置處於中間偏底層的位置：
+
+1.  **應用程式層**：Spotify、Chrome、GStreamer。
+2.  **音訊伺服器層 (Sound Server)**：如 **PulseAudio** 或 **PipeWire**。它們會打開 ALSA 的 PCM 裝置，並負責混合多個程式的聲音。
+3.  **核心層 (ALSA Driver)**：直接操作 `/dev/snd/pcm*`，將資料丟給硬體。
+
+> **為什麼你的 GStreamer 指令會用到它？**
+> 當你執行 `pulsesink` 時，PulseAudio 會去佔用並操作這些 PCM 節點。如果你直接使用 `alsasink device=hw:0,0`，則是跳過伺服器，直接與 `pcmC0D0p` 通訊。
+
+---
+
+### PCM 的重要參數
+一個 PCM 裝置要能正常運作，必須設定好以下參數（這也是你之前報錯的原因之一）：
+
+* **採樣率 (Sample Rate)**：每秒取樣幾次（如 44100Hz, 48000Hz）。
+* **位元深度 (Bit Depth)**：每個樣本的大小（如 16-bit, 24-bit）。
+* **聲道數 (Channels)**：單聲道、立體聲 (2ch) 或 5.1 環繞。
+
+如果你的播放軟體傳送的 PCM 格式（例如 44.1kHz）與硬體或驅動限制的格式（例如只收 48kHz）不符，系統就會報錯並拒絕執行。
+
+---
 
 ## 一、PCM 裝置總覽（來自 Topology）
+
+在 meta-rubikpi-bsp 有一個配方：
+`recipes-multimedia/audio/qcom-audio-firmware_git.bb`\
+其中有一行：`SRC_URI += "file://qcs6490/qcs6490-rb3gen2-snd-card-tplg.conf"`
 
 `qcs6490-rb3gen2-snd-card-tplg.conf` 定義了以下 PCM 裝置：
 
@@ -358,6 +407,8 @@ ls /dev/snd
 by-path    pcmC0D0c  pcmC0D2p  pcmC0D4p  pcmC0D6p  pcmC0D8p  timer
 controlC0  pcmC0D1p  pcmC0D3c  pcmC0D5c  pcmC0D7c  pcmC0D9c
 ```
+> 系統只有一張 Card 0 (`qcm6490-idp-snd-card`)，結合 `ls /dev/snd` 的結果：
+> 這張 qcm6490 卡片下面掛載了非常多 PCM 裝置（pcmC0D0 到 pcmC0D9）。==這在高通平台上很常見，因為它會把 多媒體播放、通話音訊、系統音效、HDMI、藍牙 分別定義在不同的 Device 節點上。==
 
 `/dev/snd` 下的節點是 Linux 核心中 **ALSA（Advanced Linux Sound Architecture）** 驅動程式所建立的裝置檔案，是硬體音效卡與軟體之間的橋樑。
 

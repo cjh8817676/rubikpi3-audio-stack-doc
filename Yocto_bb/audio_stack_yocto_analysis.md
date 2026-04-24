@@ -50,8 +50,7 @@
 | TinyALSA | `tinyplay`, `tinycap`, `tinymix`, `tinypcminfo` | `tinyalsa` | ✅ 建議 |
 | Qualcomm FTM | `ftm_audio_main`（直接呼叫 AGM/ARGS）| `qcom-audio-ftm` | ✅ 必須 |
 
-> 📄 **深入研究與實驗步驟**：[Layer 1 Application Layer — User-Space 音頻操控方法與 RubikPi3 實驗手冊](./layer1_application_audio_lab.md)
-
+> 📄 **深入研究與實驗步驟**：[Layer 1 Application Layer — User-Space 音頻操控方法與 RubikPi3 實驗手冊](../Audio_Experiment/layer1_application_audio_lab.md)
 ---
 
 ### Layer 2：Middleware Layer（中介軟體層）
