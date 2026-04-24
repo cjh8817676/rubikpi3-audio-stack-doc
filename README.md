@@ -3,6 +3,13 @@
 [RubikPi AI](https://rubikpi.ai/)
 ![RubikPi3 開發板](RubikPi3/RubikPi3_Dev.jpg)
 
+# Audio Component
+
+![alt text](RubikPi3/audio_codec&6490.png)
+
+# 電路：
+
+![alt text](RubikPi3/codec_circuit.png)
 
 
 RubikPi 3 相關 GitHub 函式庫：

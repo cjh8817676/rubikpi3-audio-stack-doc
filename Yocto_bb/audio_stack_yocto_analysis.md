@@ -39,6 +39,19 @@
 **角色：**  
 使用者空間應用程式透過標準 POSIX API 或框架 API（如 PulseAudio Client API、GStreamer Element API）操作音頻。應用程式不直接接觸 ALSA / kernel，全由 Middleware 轉接。
 
+**User-Space 操控方式（六大層次）：**
+
+| 層次 | 工具 | Yocto Package | 是否需停 PipeWire |
+|------|------|--------------|-----------------|
+| PipeWire Native | `pw-play`, `pw-record`, `pw-cli`, `pw-top`, `pw-dump` | `pipewire-tools` | ❌ |
+| PulseAudio Compat | `paplay`, `parecord`, `pactl` | `pipewire-pulse` | ❌ |
+| GStreamer | `gst-launch-1.0` (pulsesink/pulsesrc) | `gstreamer1.0` | ❌ |
+| ALSA 直接 | `aplay`, `arecord`, `amixer`, `alsactl`, `alsaucm` | `alsa-utils` | ✅ 建議 |
+| TinyALSA | `tinyplay`, `tinycap`, `tinymix`, `tinypcminfo` | `tinyalsa` | ✅ 建議 |
+| Qualcomm FTM | `ftm_audio_main`（直接呼叫 AGM/ARGS）| `qcom-audio-ftm` | ✅ 必須 |
+
+> 📄 **深入研究與實驗步驟**：[Layer 1 Application Layer — User-Space 音頻操控方法與 RubikPi3 實驗手冊](./layer1_application_audio_lab.md)
+
 ---
 
 ### Layer 2：Middleware Layer（中介軟體層）
@@ -55,8 +68,8 @@
 |------|------|
 | 角色 | 通用音頻伺服器，處理多工程序混音、路由 |
 | 接口 | 上層：PulseAudio Client API；下層：PAL / ALSA plugin |
-| Yocto Recipe | `pulseaudio_17.0.bbappend`（meta-rubikpi-bsp） |
-| Yocto Recipe | `pa-pal-plugins_1.0.bb`（meta-rubikpi-bsp） |
+| Yocto Recipe | `pulseaudio_17.0.bbappend`（meta-rubikpi-bsp/recipes-multimedia） |
+| Yocto Recipe | `pa-pal-plugins_1.0.bb`（meta-rubikpi-bsp/recipes-multimedia） |
 | 特殊配置 | 在 RubikPi3 中被設定為 **不自動啟動**（`Avoid PulseAudio service to start`），改以 PipeWire 取代 |
 
 **Package Group 成員（`packagegroup-qcom-audio.bb` → `PULSEAUDIO_PKGS`）：**
