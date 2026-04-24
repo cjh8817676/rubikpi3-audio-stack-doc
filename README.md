@@ -13,12 +13,13 @@
 
 
 RubikPi 3 相關 GitHub 函式庫：
-- https://github.com/rubikpi-ai/linux
-- https://github.com/rubikpi-ai/linux-android13
-- https://github.com/rubikpi-ai/linux-debian
-- https://github.com/rubikpi-ai/meta-rubikpi-bsp
-- https://github.com/rubikpi-ai/meta-rubikpi-distro
-- https://github.com/rubikpi-ai/device-tree
+
+- [rubikpi-ai/linux](https://github.com/rubikpi-ai/linux)
+- [rubikpi-ai/linux-android13](https://github.com/rubikpi-ai/linux-android13)
+- [rubikpi-ai/linux-debian](https://github.com/rubikpi-ai/linux-debian)
+- [rubikpi-ai/meta-rubikpi-bsp](https://github.com/rubikpi-ai/meta-rubikpi-bsp)
+- [rubikpi-ai/meta-rubikpi-distro](https://github.com/rubikpi-ai/meta-rubikpi-distro)
+- [rubikpi-ai/device-tree](https://github.com/rubikpi-ai/device-tree)
 
 ---
 
@@ -76,18 +77,45 @@ ADSP Q6 DSP → QUATERNARY_MI2S_RX → LT9611 HDMI bridge → HDMI 輸出
 
 ## 詳細分析文件
 
+### Kernel & Device Tree
+
 - [Kernel&DT/es8316_driver_analysis.md](Kernel&DT/es8316_driver_analysis.md) — ES8316 驅動程式分析
 - [Kernel&DT/qcm6490_machine_driver.md](Kernel&DT/qcm6490_machine_driver.md) — QCM6490 機器驅動分析
 - [Kernel&DT/device_tree_analysis.md](Kernel&DT/device_tree_analysis.md) — Device Tree 配置分析
-https://github.com/rubikpi-ai/WiringRP-Python
-https://github.com/rubikpi-ai/WiringRP
-https://github.com/rubikpi-ai/WiringRP-Python
-https://github.com/qualcomm-linux/meta-qcom
-https://github.com/qualcomm-linux/meta-qcom-hwe
-https://github.com/qualcomm-linux/kernel
-https://github.com/qualcomm-linux/meta-qcom-qim-product-sdk
 
+### Yocto Audio Stack
 
-Qualcomm Linux 文檔：
-https://docs.qualcomm.com/doc/80-70018-16/topic/overview.html?product=895724676033554725&facet=Audio&version=1.4
+- [Yocto_bb/audio_stack_yocto_analysis.md](Yocto_bb/audio_stack_yocto_analysis.md) — Yocto Metadata Layer 音頻架構分析（7 層全覽）
+
+### 實驗手冊（Hardware-Verified）
+
+- [Audio_Experiment/layer1_application_audio_lab.md](Audio_Experiment/layer1_application_audio_lab.md) — Layer 1 Application Layer 深度分析與 RubikPi3 實驗手冊  
+  （PulseAudio system mode 實測、工具分層、9 組實驗結果）
+
+---
+
+## 相關資源
+
+### RubikPi GitHub
+
+- [rubikpi-ai/linux](https://github.com/rubikpi-ai/linux)
+- [rubikpi-ai/linux-android13](https://github.com/rubikpi-ai/linux-android13)
+- [rubikpi-ai/linux-debian](https://github.com/rubikpi-ai/linux-debian)
+- [rubikpi-ai/meta-rubikpi-bsp](https://github.com/rubikpi-ai/meta-rubikpi-bsp)
+- [rubikpi-ai/meta-rubikpi-distro](https://github.com/rubikpi-ai/meta-rubikpi-distro)
+- [rubikpi-ai/device-tree](https://github.com/rubikpi-ai/device-tree)
+- [rubikpi-ai/WiringRP](https://github.com/rubikpi-ai/WiringRP)
+- [rubikpi-ai/WiringRP-Python](https://github.com/rubikpi-ai/WiringRP-Python)
+
+### Qualcomm Linux GitHub
+
+- [qualcomm-linux/kernel](https://github.com/qualcomm-linux/kernel)
+- [qualcomm-linux/meta-qcom](https://github.com/qualcomm-linux/meta-qcom)
+- [qualcomm-linux/meta-qcom-hwe](https://github.com/qualcomm-linux/meta-qcom-hwe)
+- [qualcomm-linux/meta-qcom-qim-product-sdk](https://github.com/qualcomm-linux/meta-qcom-qim-product-sdk)
+
+### Qualcomm 官方文件
+
+- [Qualcomm Linux Audio — Overview (80-70018-16)](https://docs.qualcomm.com/doc/80-70018-16/topic/overview.html?product=895724676033554725&facet=Audio&version=1.4)
+- [Qualcomm Linux Audio — APIs and Sample Apps (80-70015-16)](https://docs.qualcomm.com/doc/80-70015-16/topic/apis_and_sample_apps.html?product=895724676033554725&facet=Audio&version=1.2)
 
