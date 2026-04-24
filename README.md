@@ -12,7 +12,6 @@ RubikPi 3 相關 GitHub 函式庫：
 - https://github.com/rubikpi-ai/meta-rubikpi-bsp
 - https://github.com/rubikpi-ai/meta-rubikpi-distro
 - https://github.com/rubikpi-ai/device-tree
-- https://github.com/rubikpi-ai/WiringRP
 
 ---
 
